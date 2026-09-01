@@ -3,13 +3,13 @@
 #
 # Usage:
 #   email-send.sh --to "user@example.com" --subject "Hello" --body "Message"
-#   email-send.sh --from lola@3metas.com --to "user@example.com" --subject "Hello" --body "Message"
+#   email-send.sh --from assistant@example.com --to "user@example.com" --subject "Hello" --body "Message"
 
 LOLABOT_HOME="${LOLABOT_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Default to Lola's account for sending
-ACCOUNT="lola@3metas.com"
+# Sending account must be explicit (--from) — no hardcoded default.
+ACCOUNT=""
 
 # Parse --from if provided
 ARGS=()
@@ -25,5 +25,10 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+if [[ -z "$ACCOUNT" ]]; then
+    echo "ERROR: no sending account. Pass --from <address> (must match an account in your config)." >&2
+    exit 1
+fi
 
 "$SCRIPT_DIR/email.sh" send "$ACCOUNT" "${ARGS[@]}"

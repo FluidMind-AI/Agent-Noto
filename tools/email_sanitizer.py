@@ -311,8 +311,19 @@ URL_SHORTENERS = {
 SAFE_DOMAINS = {
     "google.com", "gmail.com", "outlook.com", "microsoft.com",
     "github.com", "linkedin.com", "apple.com", "amazon.com",
-    "3metas.com", "23blocks.com",
 }
+
+# Instance-specific trusted domains (e.g. your own company's) come from
+# config: email.safe_domains in the instance YAML — never hardcoded here.
+try:
+    from config import load_config
+    SAFE_DOMAINS |= {
+        d.strip().lower()
+        for d in (load_config().get("email", {}).get("safe_domains") or [])
+        if isinstance(d, str) and d.strip()
+    }
+except Exception:
+    pass
 
 # Regex to find URLs in text
 URL_REGEX = re.compile(

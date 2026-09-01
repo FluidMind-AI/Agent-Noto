@@ -109,7 +109,7 @@ python tools/memory_indexer.py <command>
 
 ```bash
 # Add to long-term (permanent)
-python tools/memory_indexer.py add "User's income is $215,628/year" --type fact
+python tools/memory_indexer.py add "User's income is $100,000/year" --type fact
 
 # Add with metadata
 python tools/memory_indexer.py add "Heart attack on 8/13/2024" \

@@ -25,7 +25,7 @@ This folder stores **the user's** personal information — life events, facts, g
 
 ### Profile File
 
-- Named after the user: e.g., `juan-profile.md`, `sarah-profile.md`
+- Named after the user: e.g., `alex-profile.md`, `sarah-profile.md`
 - Contains stable facts: family, background, health, preferences
 - Updated when new personal facts are learned
 

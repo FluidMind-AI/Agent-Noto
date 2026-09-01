@@ -31,14 +31,14 @@ Move files to the appropriate folder based on content:
 
 | Document Type | Destination |
 |---------------|-------------|
-| Personal ID (cédula, passport, police certs) | `/home/jpelaez/documents/personal/id/` |
-| Military records | `/home/jpelaez/documents/personal/military/` |
-| Family member docs | `/home/jpelaez/documents/personal/{name}/` |
-| Legal (divorces, contracts) | `/home/jpelaez/documents/legal/{category}/` |
-| Migration/immigration | `/home/jpelaez/documents/legal/migration/` |
-| Medical records, billing | `/home/jpelaez/documents/medical/` |
-| Company documents | `/home/jpelaez/{CompanyName}/documents/` |
-| Contact/third-party docs | `/home/jpelaez/documents/contacts/{name}/` |
+| Personal ID (cédula, passport, police certs) | `/home/user/documents/personal/id/` |
+| Military records | `/home/user/documents/personal/military/` |
+| Family member docs | `/home/user/documents/personal/{name}/` |
+| Legal (divorces, contracts) | `/home/user/documents/legal/{category}/` |
+| Migration/immigration | `/home/user/documents/legal/migration/` |
+| Medical records, billing | `/home/user/documents/medical/` |
+| Company documents | `/home/user/{CompanyName}/documents/` |
+| Contact/third-party docs | `/home/user/documents/contacts/{name}/` |
 
 **Important:** Company documents go in the company folder, not personal documents.
 
@@ -59,12 +59,12 @@ python $LOLABOT_HOME/tools/file_indexer.py scan /path --tags "tags"
 
 **Tagging guidelines:**
 - Always include document type: `personal`, `legal`, `medical`, `business`
-- Include person name if relevant: `juan`, `felipe`, `marco`
+- Include person name if relevant: `alex`, `sam`, `kim`
 - Include category: `id`, `passport`, `divorce`, `migration`
 
 ### 4. Extract to Memory
 
-For documents containing personal information about Juan or his family, add relevant facts to memory:
+For documents containing personal information about the user or their family, add relevant facts to memory:
 
 ```bash
 $LOLABOT_HOME/tools/memory.sh add "Fact extracted from document" --type fact --tags "relevant,tags"
@@ -79,12 +79,12 @@ python $LOLABOT_HOME/tools/memory_indexer.py add "..." --type fact --tags "..."
 **What to extract:**
 | Document Contains | Memory Type | Example |
 |-------------------|-------------|---------|
-| Birth date, ID numbers | fact | "Juan's cédula is 79,672,150" |
-| Events with dates | event | "Felipe born December 26, 2007" |
-| Relationships | person | "Jose Miguel Nunes Pelaez is Juan's cousin" |
-| Addresses | fact | "Current address: 2852 Kalmia Ave..." |
-| Financial info | fact | "BCH medical debt: $12,171.78" |
-| Expiration dates | fact | "Felipe's passport expires Feb 14, 2026" |
+| Birth date, ID numbers | fact | "The user's ID number is 12,345,678" |
+| Events with dates | event | "Sam born January 1, 2010" |
+| Relationships | person | "Jamie Example is the user's cousin" |
+| Addresses | fact | "Current address: 123 Example Ave..." |
+| Financial info | fact | "Medical debt: $1,234.56" |
+| Expiration dates | fact | "Sam's passport expires Feb 14, 2030" |
 
 **Don't extract:**
 - Redundant information already in memory
@@ -96,13 +96,13 @@ python $LOLABOT_HOME/tools/memory_indexer.py add "..." --type fact --tags "..."
 ## Folder Structure Reference
 
 ```
-/home/jpelaez/
+/home/user/
 ├── documents/
 │   ├── personal/
-│   │   ├── id/           # Juan's ID documents
+│   │   ├── id/           # the user's ID documents
 │   │   ├── military/     # Military records
-│   │   ├── felipe/       # Son's documents
-│   │   ├── marco/        # Father's documents
+│   │   ├── sam/          # Family member documents
+│   │   ├── kim/          # Family member documents
 │   │   └── {family}/     # Other family members
 │   ├── legal/
 │   │   ├── divorces/
@@ -111,19 +111,15 @@ python $LOLABOT_HOME/tools/memory_indexer.py add "..." --type fact --tags "..."
 │   ├── medical/
 │   └── contacts/
 │       └── {name}/       # Third-party documents
-├── 3Metas/
-│   └── documents/        # 3Metas company docs
-├── PPM/
-│   └── documents/        # PPM company docs
 └── {Company}/
-    └── documents/        # Other company docs
+    └── documents/        # Company docs (one folder per company)
 ```
 
 ---
 
 ## Transport Folder
 
-New documents typically arrive in `/srv/fileserver/transport/` (local fileserver on mini-lola).
+New documents typically arrive in `/srv/fileserver/transport/` (local fileserver).
 
 When processing transport:
 1. List all files in transport
@@ -142,21 +138,21 @@ ls /mnt/fileserver/transport/
 # (Use Read tool on each file)
 
 # 3. Create destination folder if needed
-mkdir -p /home/jpelaez/documents/personal/felipe
+mkdir -p /home/user/documents/personal/sam
 
 # 4. Copy file to destination
-cp "/mnt/fileserver/transport/Felipe Birth Certificate.pdf" \
-   "/home/jpelaez/documents/personal/felipe/"
+cp "/mnt/fileserver/transport/Sam Birth Certificate.pdf" \
+   "/home/user/documents/personal/sam/"
 
 # 5. Index the file
 source $LOLABOT_HOME/.venv/bin/activate
 python $LOLABOT_HOME/tools/file_indexer.py scan \
-  /home/jpelaez/documents/personal/felipe --tags "personal,felipe,family"
+  /home/user/documents/personal/sam --tags "personal,sam,family"
 
 # 6. Add to memory
 python $LOLABOT_HOME/tools/memory_indexer.py add \
-  "Felipe Pelaez born December 26, 2007. Mother: Claudia Patricia Huertas Diaz" \
-  --type fact --tags "family,felipe"
+  "Sam Example born January 1, 2010. Parent: Jordan Example" \
+  --type fact --tags "family,sam"
 ```
 
 ---

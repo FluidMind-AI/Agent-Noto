@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Lola Memory Indexer (v2 - Two-Tier Memory)
+Memory Indexer (v2 - Two-Tier Memory)
 
 Indexes knowledge, facts, events, and learnings into Memvid V2.
 Separate from file index - this stores WHAT we know, not WHERE things are.
@@ -12,9 +12,9 @@ Features:
 - Confidence scores: Quality indicator for memories
 
 Usage:
-    python memory_indexer.py add --type fact "Juan's income is $215,628/year"
-    python memory_indexer.py add --type event --date 2024-10-17 "Immigration waiver approved"
-    python memory_indexer.py find "health issues"
+    python memory_indexer.py add --type fact "The Berlin office opened in 2023"
+    python memory_indexer.py add --type event --date 2024-10-17 "Vendor contract renewed"
+    python memory_indexer.py find "vendor contracts"
     python memory_indexer.py stats
 """
 
@@ -313,8 +313,8 @@ class MemoryMetadataDB:
 
 # Memory types
 class MemoryType:
-    FACT = "fact"           # Things that are true (Juan lives in Boulder)
-    EVENT = "event"         # Things that happened (Heart attack on 8/13/2024)
+    FACT = "fact"           # Things that are true (The Berlin office opened in 2023)
+    EVENT = "event"         # Things that happened (Office move on 8/13/2024)
     LEARNING = "learning"   # Things discovered (Memvid is faster than SQLite)
     DECISION = "decision"   # Choices made and why (Chose Memvid for memory storage)
     NOTE = "note"           # General notes about topics
@@ -1195,7 +1195,7 @@ def cmd_import_markdown(args):
 
 def cmd_stats(args):
     """Handle stats command."""
-    print("=== Juan's Memory System ===\n")
+    print("=== Company Knowledge — Memory System ===\n")
 
     # Long-term stats
     long_term = MemoryIndex.long_term()
@@ -1551,7 +1551,7 @@ def cmd_enrich(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Lola Memory Indexer - Index and search knowledge/facts/events"
+        description="Memory Indexer - Index and search knowledge/facts/events"
     )
     subparsers = parser.add_subparsers(dest="command", help="Commands")
 

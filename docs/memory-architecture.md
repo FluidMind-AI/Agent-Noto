@@ -53,15 +53,15 @@ Two separate Memvid indexes, linked by references:
 **Example entry:**
 ```json
 {
-  "path": "/home/jpelaez/photos/2024/ecuador/IMG_0312.jpg",
+  "path": "/home/user/photos/2024/trips/IMG_0312.jpg",
   "name": "IMG_0312.jpg",
   "type": "image/jpeg",
   "size": 4521984,
   "created": "2024-03-12T14:32:00",
   "tags": ["ecuador", "family", "travel", "2024"],
-  "description": "Juan with family at Mitad del Mundo monument",
+  "description": "Family trip photo at a monument",
   "exif": {"date": "2024-03-12", "location": "Quito, Ecuador"},
-  "thumbnail": "/home/jpelaez/.lola/thumbnails/abc123.jpg"
+  "thumbnail": "~/.assistant/thumbnails/abc123.jpg"
 }
 ```
 
@@ -77,7 +77,7 @@ Two separate Memvid indexes, linked by references:
 - People notes (context about individuals)
 
 **Example queries:**
-- "What health issues has Juan had?"
+- "What health issues has the user had?"
 - "When was the immigration waiver approved?"
 - "What did we learn about AI memory systems?"
 - "What decisions were made about the architecture?"
@@ -90,7 +90,7 @@ Two separate Memvid indexes, linked by references:
   "date": "2024-03-10",
   "tags": ["travel", "family", "ecuador"],
   "related_files": ["files://ecuador/IMG_0312.jpg", "files://ecuador/IMG_0315.jpg"],
-  "related_people": ["Juan", "Yuliana", "family"]
+  "related_people": ["the user", "family"]
 }
 ```
 
@@ -102,7 +102,7 @@ Memories can reference files, and files can be tagged with memory contexts:
 Memory: "Ecuador trip March 2024..."
   └── related_files: ["files://ecuador/*"]
 
-File: "/photos/2024/ecuador/IMG_0312.jpg"
+File: "/photos/2024/trips/IMG_0312.jpg"
   └── memory_refs: ["memory://events/ecuador-2024"]
 ```
 
@@ -112,14 +112,14 @@ When I find a photo from Ecuador, I can pull the memory context.
 ## Query Flow
 
 ```
-User: "Show me photos from Felipe's graduation"
+User: "Show me photos from Sam's graduation"
 
-1. Search memories.mv2 for "Felipe graduation"
-   → Found: Event "Felipe's graduation June 2025..."
+1. Search memories.mv2 for "Sam graduation"
+   → Found: Event "Sam's graduation June 2025..."
    → Has related_files reference
 
 2. Search files.mv2 for:
-   a. Direct query "Felipe graduation photos"
+   a. Direct query "Sam graduation photos"
    b. Files tagged with event reference
 
 3. Return combined results:
@@ -130,7 +130,7 @@ User: "Show me photos from Felipe's graduation"
 ## Directory Structure
 
 ```
-/home/jpelaez/lola/
+~/assistant-home/
 ├── indexes/
 │   ├── files.mv2          # File index
 │   └── memories.mv2       # Knowledge index
@@ -154,8 +154,8 @@ User: "Show me photos from Felipe's graduation"
 ### File Indexer (`lola-index-files`)
 ```bash
 # Scan directories and update files.mv2
-lola-index-files /home/jpelaez/photos
-lola-index-files /home/jpelaez/documents
+lola-index-files /home/user/photos
+lola-index-files /home/user/documents
 
 # Query files
 lola-find-files "Ecuador trip photos"
@@ -164,7 +164,7 @@ lola-find-files "Ecuador trip photos"
 ### Memory Manager (`lola-memory`)
 ```bash
 # Add memory
-lola-memory add --type fact "Juan's income is $215,628/year"
+lola-memory add --type fact "The user's income is $100,000/year"
 
 # Query memories
 lola-memory find "health issues"

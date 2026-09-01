@@ -40,14 +40,26 @@ def load_config() -> Dict[str, Any]:
     config: Dict[str, Any] = {}
 
     if os.path.exists(config_path):
+        # Privacy-critical: if the config file exists it MUST load. Silently
+        # falling back to defaults would redirect writes to the wrong paths
+        # (e.g. un-namespacing instance data into default locations).
+        # Fail loud instead.
         try:
             import yaml
+        except ImportError as e:
+            raise RuntimeError(
+                f"config exists at {config_path} but PyYAML is not "
+                f"installed, so it cannot be applied and paths would "
+                f"silently fall back to defaults. Run: uv pip install pyyaml"
+            ) from e
+        try:
             with open(config_path) as f:
                 config = yaml.safe_load(f) or {}
-        except ImportError:
-            pass
-        except Exception:
-            pass
+        except Exception as e:
+            raise RuntimeError(
+                f"config at {config_path} failed to parse ({e}); "
+                f"refusing to fall back to default paths."
+            ) from e
 
     # Inject resolved home
     config["_home"] = home

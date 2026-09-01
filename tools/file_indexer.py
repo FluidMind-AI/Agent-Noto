@@ -9,7 +9,7 @@ Usage:
     python file_indexer.py scan /path/to/directory [--pattern "*.jpg"]
     python file_indexer.py scan-onedrive /Photos/2024
     python file_indexer.py add-url "https://example.com/doc.pdf" --tags "work,reference"
-    python file_indexer.py add-remote macbook:/Users/juan/Documents/file.pdf
+    python file_indexer.py add-remote macbook:/Users/alex/Documents/file.pdf
     python file_indexer.py find "query string"
     python file_indexer.py stats
 """
@@ -108,8 +108,8 @@ def parse_location(location_str: str) -> Dict[str, str]:
     """Parse a location string into components.
 
     Examples:
-        /home/jpelaez/file.pdf -> local
-        macbook:/Users/juan/file.pdf -> remote (host: macbook)
+        /home/user/file.pdf -> local
+        macbook:/Users/alex/file.pdf -> remote (host: macbook)
         onedrive://Documents/file.pdf -> onedrive
         https://example.com/file.pdf -> url
         s3://bucket/key -> s3

@@ -64,7 +64,8 @@ if [[ $# -lt 1 ]]; then
     exit 1
 fi
 
-TARGET_DIR="$(realpath -m "$1")"
+# Portable absolute-path resolution (GNU `realpath -m` is absent on macOS/BSD)
+TARGET_DIR="$(python3 -c 'import os,sys; print(os.path.abspath(os.path.expanduser(sys.argv[1])))' "$1")"
 INSTANCE_NAME="$(basename "$TARGET_DIR")"
 
 # --- Check if target exists ---
@@ -277,10 +278,12 @@ success "Generated CLAUDE.md"
 # --- Also replace placeholders in brain templates ---
 for brain_file in "$TARGET_DIR/brain/eisenhower.md" "$TARGET_DIR/brain/agents.md"; do
     if [[ -f "$brain_file" ]]; then
-        sed -i \
+        # In-place sed portable across GNU and BSD/macOS: write to a temp
+        # file and move it back (BSD `sed -i` requires a suffix argument).
+        sed \
             -e "s|{{AGENT_NAME}}|$AGENT_NAME|g" \
             -e "s|{{USER_NAME}}|$USER_NAME|g" \
-            "$brain_file"
+            "$brain_file" > "$brain_file.tmp" && mv "$brain_file.tmp" "$brain_file"
     fi
 done
 success "Updated brain templates with agent/user names"

@@ -62,7 +62,7 @@ Confidence scores = memory strength
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        RAW CONVERSATIONS                             │
 │  ~/.claude/projects/*/conversations/*.jsonl                          │
-│  - Every message between Juan and Lola                              │
+│  - Every message between the user and the agent                              │
 │  - Huge, verbose, temporary context                                  │
 │  - Read-only (Claude manages these)                                  │
 └─────────────────────────────────────────────────────────────────────┘
@@ -423,6 +423,6 @@ lola/
 
 ## Next Steps
 
-1. **Review this plan with Juan**
+1. **Review this plan with the operator**
 2. Decide on open questions
 3. Start Phase 1 implementation

@@ -4,12 +4,15 @@ brain/credentials*.yaml
 brain/companies*.yaml
 brain/*-private.yaml
 brain/eisenhower.md
+brain/lessons.md
+brain/learning-log.md
 brain/companies.md
 brain/finances.md
 memory/*.md
 !memory/README.md
 emails/
 indexes/
+.claude/settings.local.json
 
 # Python
 __pycache__/

@@ -1,0 +1,3 @@
+# noto nightly learning pass — add with `crontab -e` (Linux / any machine with cron).
+# macOS: prefer the launchd plist in deploy/ (cron on macOS lacks Full Disk Access).
+30 3 * * * NOTO_HOME={{INSTANCE_DIR}} /bin/bash {{INSTANCE_DIR}}/tools/nightly.sh >> {{INSTANCE_DIR}}/indexes/nightly.log 2>&1

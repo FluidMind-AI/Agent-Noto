@@ -1,0 +1,5 @@
+# Runtime dependencies for a noto instance (installed into .venv by setup.sh).
+# tools/llm.py, tools/learn.py and tools/email_sanitizer.py are stdlib-only.
+memvid-sdk>=2.0.159   # semantic memory + file index engine (tools/memory_indexer.py, tools/file_indexer.py)
+pyyaml>=6.0           # noto.yaml + brain/credentials.yaml (tools/config.py)
+pillow-heif>=0.16     # HEIC -> JPEG (tools/heic-convert.sh)

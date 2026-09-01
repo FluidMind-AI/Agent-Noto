@@ -1,5 +1,5 @@
 ---
-name: File Processing
+name: file-processing
 description: Process, classify, organize, and index documents. Extracts relevant information to user's memory.
 allowed-tools: Bash, Read, Write, Glob
 ---

@@ -1,5 +1,5 @@
 ---
-name: PA Memory Delegation
+name: pa-memory-delegation
 description: Personal Assistant skill for managing the USER's memory (life events, facts, learnings) - NOT the AI's operational memory. Uses a hybrid Memvid + SQLite + Markdown architecture for fast semantic search with mutable metadata tracking.
 allowed-tools: Bash
 ---

@@ -27,7 +27,7 @@ This is the **base layer**: deliberately free of any domain-specific (e.g. recru
 
 ```bash
 # Clone the repo
-git clone https://github.com/FluidMind-AI/vargas-partners-noto-agent.git noto
+git clone https://github.com/FluidMind-AI/Agent-Noto.git noto
 
 # Scaffold a new agent instance
 ./noto/setup.sh ~/my-assistant

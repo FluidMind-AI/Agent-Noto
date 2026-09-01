@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit({{INSTANCE_DIR}}/**)",
+      "Write({{INSTANCE_DIR}}/**)",
+      "Bash({{INSTANCE_DIR}}/tools/*)",
+      "Bash(tools/*)",
+      "Bash({{INSTANCE_DIR}}/.venv/bin/python *)",
+      "Bash({{INSTANCE_DIR}}/.venv/bin/python3 *)",
+      "Bash(python tools/*)",
+      "Bash(python3 tools/*)",
+      "Bash(source .venv/bin/activate*)"
+    ],
+    "ask": [
+      "Bash({{INSTANCE_DIR}}/tools/email-send.sh *)",
+      "Bash(tools/email-send.sh *)",
+      "Bash({{INSTANCE_DIR}}/tools/email.sh send *)",
+      "Bash(tools/email.sh send *)",
+      "Bash({{INSTANCE_DIR}}/tools/email.sh reply *)",
+      "Bash(tools/email.sh reply *)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/tools/session-start.sh\"" }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/tools/session-end.sh\"" }
+        ]
+      }
+    ]
+  }
+}

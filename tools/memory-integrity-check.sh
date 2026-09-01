@@ -15,13 +15,37 @@ NOTO_HOME="${NOTO_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 CHECKSUM_FILE="$NOTO_HOME/indexes/integrity-checksums.sha256"
 ALERT_LOG="/tmp/integrity-alerts.log"
 
-# Files to monitor
-WATCHED_FILES=(
-    "$NOTO_HOME/CLAUDE.md"
-)
+# Portable hashing. macOS 13+ ships a BSD /sbin/sha256sum whose `-c` does NOT
+# verify like GNU's (it silently reports OK), so we never rely on `-c`: hashes
+# are computed per file and compared here. Perl `shasum` exists on macOS and
+# nearly every Linux; GNU sha256sum is the fallback.
+hash_file() {
+    if command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$1" | awk '{print $1}'
+    else
+        sha256sum "$1" | awk '{print $1}'
+    fi
+}
 
-# Dynamically add brain/*.md and memory auto-memory files
+# Files to monitor: the agent's instructions (AGENTS.md; CLAUDE.md/GEMINI.md are
+# normally symlinks to it — watched only when they are real files).
+WATCHED_FILES=()
+for f in "$NOTO_HOME/AGENTS.md" "$NOTO_HOME/CLAUDE.md" "$NOTO_HOME/GEMINI.md"; do
+    [ -f "$f" ] && [ ! -L "$f" ] && WATCHED_FILES+=("$f")
+done
+
+# brain/*.md — except the files the learning loop rewrites on every run
+# (brain/lessons.md, brain/learning-log.md); those are generated, not instructions.
 for f in "$NOTO_HOME"/brain/*.md; do
+    case "$(basename "$f")" in
+        lessons.md|learning-log.md) continue ;;
+    esac
+    [ -f "$f" ] && WATCHED_FILES+=("$f")
+done
+
+# Instance skills (their "Learned" sections change only via tools/learn.py after
+# operator approval, which then runs `update`).
+for f in "$NOTO_HOME"/skills/*/SKILL.md; do
     [ -f "$f" ] && WATCHED_FILES+=("$f")
 done
 for f in "$HOME"/.claude/projects/*/memory/*.md; do
@@ -40,9 +64,28 @@ generate_checksums() {
     echo ""
     for f in "${WATCHED_FILES[@]}"; do
         if [ -f "$f" ]; then
-            sha256sum "$f"
+            echo "$(hash_file "$f")  $f"
         fi
     done
+}
+
+verify_checksums() {
+    # Prints one line per problem: "<path>: FAILED" or "<path>: MISSING".
+    # Returns 0 when everything matches.
+    local problems=0 expected path actual
+    while IFS= read -r line; do
+        [[ -z "$line" || "$line" == \#* ]] && continue
+        expected="${line%%  *}"
+        path="${line#*  }"
+        if [ ! -f "$path" ]; then
+            echo "$path: MISSING"; problems=$((problems+1)); continue
+        fi
+        actual="$(hash_file "$path")"
+        if [ "$actual" != "$expected" ]; then
+            echo "$path: FAILED"; problems=$((problems+1))
+        fi
+    done < "$CHECKSUM_FILE"
+    [ "$problems" -eq 0 ]
 }
 
 cmd="${1:-check}"
@@ -65,15 +108,14 @@ case "$cmd" in
             exit 1
         fi
 
-        # Run sha256sum check, filtering out comment lines
-        RESULT=$(grep -v '^#' "$CHECKSUM_FILE" | grep -v '^$' | sha256sum -c 2>&1) || true
-        FAILURES=$(echo "$RESULT" | grep -c "FAILED" || true)
-        MISSING=$(echo "$RESULT" | grep -c "No such file" || true)
+        RESULT=$(verify_checksums) || true
+        FAILURES=$(printf '%s\n' "$RESULT" | grep -c ": FAILED$" || true)
+        MISSING=$(printf '%s\n' "$RESULT" | grep -c ": MISSING$" || true)
 
         if [ "$FAILURES" -gt 0 ] || [ "$MISSING" -gt 0 ]; then
             TIMESTAMP=$(date -Iseconds)
             echo "[$TIMESTAMP] INTEGRITY ALERT: $FAILURES file(s) modified, $MISSING file(s) missing" | tee -a "$ALERT_LOG"
-            echo "$RESULT" | grep -E "FAILED|No such file" | tee -a "$ALERT_LOG"
+            printf '%s\n' "$RESULT" | grep -E ": (FAILED|MISSING)$" | tee -a "$ALERT_LOG"
             echo ""
             echo "If these changes were authorized, run: $0 update"
             exit 2

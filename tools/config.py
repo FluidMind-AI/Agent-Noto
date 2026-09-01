@@ -94,8 +94,26 @@ def load_config() -> Dict[str, Any]:
     config["_resolved"]["emails_index"] = _resolve_path(
         email.get("index_path", "indexes/emails.mv2"), home)
 
+    # Security
+    security = config.get("security", {}) or {}
+    config["_resolved"]["integrity_checksums"] = _resolve_path(
+        security.get("integrity_checksum_file", "indexes/integrity-checksums.sha256"), home)
+
+    # Learning loop (tools/learn.py) — stdlib-only, works under any harness
+    learning = config.get("learning", {}) or {}
+    config["_resolved"]["learning_db"] = _resolve_path(learning.get("db", "indexes/learning.db"), home)
+    config["_resolved"]["lessons_file"] = _resolve_path(learning.get("lessons_file", "brain/lessons.md"), home)
+    config["_resolved"]["learning_log"] = _resolve_path(learning.get("log_file", "brain/learning-log.md"), home)
+    config["_resolved"]["skills_dir"] = _resolve_path(learning.get("skills_dir", "skills"), home)
+
     _config_cache = config
     return config
+
+
+def reset_cache() -> None:
+    """Forget the cached config (tests, or after NOTO_HOME changes in-process)."""
+    global _config_cache
+    _config_cache = None
 
 
 def get_path(key: str) -> str:

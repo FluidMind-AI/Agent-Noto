@@ -50,3 +50,23 @@ security:
   watched_files:
     - "CLAUDE.md"
     - "brain/*.md"
+
+# LLM backend for BACKGROUND jobs only (nightly learning pass, transcript
+# feedback extraction). Your interactive agent is whatever harness you run —
+# Claude Code, Codex CLI, Gemini CLI, OpenCode, ... — noto never owns that loop.
+# `auto` picks the first available: claude-cli, codex-cli, gemini-cli, then
+# anthropic (ANTHROPIC_API_KEY) or openai (OPENAI_API_KEY).
+llm:
+  backend: "auto"        # auto | claude-cli | codex-cli | gemini-cli | anthropic | openai
+  model: ""              # optional; empty = backend default (anthropic: claude-opus-5). Required for openai.
+  base_url: ""           # openai backend: http://localhost:11434/v1 (Ollama), https://api.openai.com/v1,
+                         #   https://openrouter.ai/api/v1, http://localhost:1234/v1 (LM Studio) ...
+  api_key_env: ""        # env var holding the key; default ANTHROPIC_API_KEY / OPENAI_API_KEY (unset = no auth, fine for local)
+  timeout_seconds: 180
+
+# Learning loop (tools/learn.py) — feedback -> lessons -> operator approval -> standing instructions
+learning:
+  db: "indexes/learning.db"
+  lessons_file: "brain/lessons.md"
+  log_file: "brain/learning-log.md"
+  skills_dir: "skills"

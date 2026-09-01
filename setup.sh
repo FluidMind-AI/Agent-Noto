@@ -44,10 +44,10 @@ ask() {
 
 # --- Resolve script directory (where the template lives) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TEMPLATE_FILE="$SCRIPT_DIR/CLAUDE.TEMPLATE.md"
+TEMPLATE_FILE="$SCRIPT_DIR/AGENTS.TEMPLATE.md"
 
 if [[ ! -f "$TEMPLATE_FILE" ]]; then
-    error "CLAUDE.TEMPLATE.md not found at $SCRIPT_DIR"
+    error "AGENTS.TEMPLATE.md not found at $SCRIPT_DIR"
     error "Run this script from the noto repo directory."
     exit 1
 fi
@@ -70,8 +70,8 @@ INSTANCE_NAME="$(basename "$TARGET_DIR")"
 
 # --- Check if target exists ---
 if [[ -d "$TARGET_DIR" ]]; then
-    if [[ -f "$TARGET_DIR/CLAUDE.md" ]]; then
-        error "Directory $TARGET_DIR already contains a CLAUDE.md file."
+    if [[ -f "$TARGET_DIR/AGENTS.md" || -f "$TARGET_DIR/CLAUDE.md" ]]; then
+        error "Directory $TARGET_DIR already contains an AGENTS.md / CLAUDE.md file."
         error "This looks like an existing PA instance. Aborting to avoid overwriting."
         exit 1
     fi
@@ -178,6 +178,8 @@ dirs=(
     "$TARGET_DIR/skills"
     "$TARGET_DIR/tests"
     "$TARGET_DIR/docs"
+    "$TARGET_DIR/deploy"
+    "$TARGET_DIR/.claude"
 )
 
 for dir in "${dirs[@]}"; do
@@ -201,7 +203,7 @@ if [[ -d "$SCRIPT_DIR/skills" ]]; then
 fi
 
 # Copy brain templates
-cp -n "$SCRIPT_DIR/brain/eisenhower.md" "$TARGET_DIR/brain/eisenhower.md" 2>/dev/null || true
+cp -n "$SCRIPT_DIR/templates/eisenhower.md" "$TARGET_DIR/brain/eisenhower.md" 2>/dev/null || true
 cp -n "$SCRIPT_DIR/brain/agents.md" "$TARGET_DIR/brain/agents.md" 2>/dev/null || true
 cp -n "$SCRIPT_DIR/brain/README.md" "$TARGET_DIR/brain/README.md" 2>/dev/null || true
 success "Copied brain templates"
@@ -209,6 +211,31 @@ success "Copied brain templates"
 # Copy memory README
 cp -n "$SCRIPT_DIR/memory/README.md" "$TARGET_DIR/memory/README.md" 2>/dev/null || true
 success "Copied memory README"
+
+# Dependency manifest (installed into .venv below)
+cp -n "$SCRIPT_DIR/requirements.txt" "$TARGET_DIR/requirements.txt" 2>/dev/null || true
+
+# --- Harness adapters ---
+# The framework is harness-neutral: AGENTS.md + skills/ + tools/ work under
+# Claude Code, Codex CLI, Gemini CLI, OpenCode, ... Anything harness-specific
+# lives in a small adapter so nothing else has to know which one you run.
+
+# Claude Code: permissions + session hooks, and skills discoverable as slash commands.
+sed -e "s|{{INSTANCE_DIR}}|$INSTANCE_DIR|g" \
+    "$SCRIPT_DIR/templates/claude/settings.json" > "$TARGET_DIR/.claude/settings.json"
+if [[ ! -e "$TARGET_DIR/.claude/skills" ]]; then
+    ln -s ../skills "$TARGET_DIR/.claude/skills" 2>/dev/null || true
+fi
+success "Claude Code adapter: .claude/settings.json (allow tools, ask before sending email, session hooks) + .claude/skills -> skills/"
+
+# Scheduling templates for the nightly learning pass (launchd for macOS, cron elsewhere).
+sed -e "s|{{INSTANCE_DIR}}|$INSTANCE_DIR|g" \
+    -e "s|{{INSTANCE_NAME}}|$INSTANCE_NAME|g" \
+    -e "s|{{HOME_DIR}}|$HOME|g" \
+    "$SCRIPT_DIR/templates/launchd/com.noto.nightly.plist" > "$TARGET_DIR/deploy/com.noto.$INSTANCE_NAME.nightly.plist"
+sed -e "s|{{INSTANCE_DIR}}|$INSTANCE_DIR|g" \
+    "$SCRIPT_DIR/templates/crontab.example" > "$TARGET_DIR/deploy/crontab.example"
+success "Scheduling templates in deploy/ (nightly learning pass)"
 
 # --- Generate noto.yaml ---
 header "Generating Configuration"
@@ -244,11 +271,30 @@ paths:
   home_dir: "$HOME_DIR"
   instance_dir: "$INSTANCE_DIR"
   instance_name: "$INSTANCE_NAME"
+
+# LLM backend for BACKGROUND jobs only (nightly learning pass, transcript
+# feedback extraction). Your interactive agent is whatever harness you run.
+# auto = first available of: claude-cli, codex-cli, gemini-cli, anthropic
+# (ANTHROPIC_API_KEY), openai (OPENAI_API_KEY). See noto.yaml.example for
+# Ollama / LM Studio / OpenRouter settings.
+llm:
+  backend: "auto"
+  model: ""
+  base_url: ""
+  api_key_env: ""
+  timeout_seconds: 180
+
+# Learning loop (tools/learn.py)
+learning:
+  db: "indexes/learning.db"
+  lessons_file: "brain/lessons.md"
+  log_file: "brain/learning-log.md"
+  skills_dir: "skills"
 YAML
 success "Generated noto.yaml"
 
-# --- Generate CLAUDE.md from template ---
-info "Generating CLAUDE.md from template..."
+# --- Generate AGENTS.md from template ---
+info "Generating AGENTS.md from template..."
 
 sed \
     -e "s|{{AGENT_NAME}}|$AGENT_NAME|g" \
@@ -271,9 +317,16 @@ sed \
     -e "s|{{EMAIL_ACCOUNT_1}}|$EMAIL_ACCOUNT_1|g" \
     -e "s|{{EMAIL_ACCOUNT_2}}|$EMAIL_ACCOUNT_2|g" \
     -e "s|{{YEAR}}|$CURRENT_YEAR|g" \
-    "$TEMPLATE_FILE" > "$TARGET_DIR/CLAUDE.md"
+    "$TEMPLATE_FILE" > "$TARGET_DIR/AGENTS.md"
 
-success "Generated CLAUDE.md"
+# Harness aliases: Codex/OpenCode/Cursor read AGENTS.md natively; Claude Code
+# reads CLAUDE.md; Gemini CLI reads GEMINI.md. Symlinks keep one source of truth.
+for alias in CLAUDE.md GEMINI.md; do
+    if [[ ! -e "$TARGET_DIR/$alias" ]]; then
+        ln -s AGENTS.md "$TARGET_DIR/$alias" 2>/dev/null || cp "$TARGET_DIR/AGENTS.md" "$TARGET_DIR/$alias"
+    fi
+done
+success "Generated AGENTS.md (+ CLAUDE.md, GEMINI.md aliases)"
 
 # --- Also replace placeholders in brain templates ---
 for brain_file in "$TARGET_DIR/brain/eisenhower.md" "$TARGET_DIR/brain/agents.md"; do
@@ -379,6 +432,7 @@ build/
 # Indexes (large binary files - rebuild from tools)
 indexes/*.mv2
 indexes/*.db
+indexes/*.log
 
 # Email cache (can be re-synced)
 emails/*/inbox/
@@ -393,10 +447,11 @@ Thumbs.db
 *.swo
 *~
 
-# IDE
+# IDE / harness-local overrides
 .idea/
 .vscode/
 *.code-workspace
+.claude/settings.local.json
 
 # Logs
 *.log
@@ -415,19 +470,19 @@ if command -v uv &>/dev/null; then
     info "Using uv for Python environment..."
     (cd "$TARGET_DIR" && uv venv .venv 2>&1) && success "Created .venv with uv" || warn "Failed to create venv with uv"
     if [[ -f "$TARGET_DIR/.venv/bin/activate" ]]; then
-        info "Installing base dependencies..."
-        (cd "$TARGET_DIR" && source .venv/bin/activate && uv pip install memvid-sdk 2>&1) && success "Installed memvid-sdk" || warn "memvid-sdk install failed (can install later)"
+        info "Installing dependencies from requirements.txt..."
+        (cd "$TARGET_DIR" && source .venv/bin/activate && uv pip install -r requirements.txt 2>&1) && success "Installed requirements.txt" || warn "Dependency install failed (later: uv pip install -r requirements.txt)"
     fi
 elif command -v python3 &>/dev/null; then
     info "uv not found, using python3 venv..."
     python3 -m venv "$TARGET_DIR/.venv" 2>&1 && success "Created .venv with python3" || warn "Failed to create venv"
     if [[ -f "$TARGET_DIR/.venv/bin/activate" ]]; then
-        info "Installing base dependencies..."
-        (cd "$TARGET_DIR" && source .venv/bin/activate && pip install memvid-sdk 2>&1) && success "Installed memvid-sdk" || warn "memvid-sdk install failed (can install later)"
+        info "Installing dependencies from requirements.txt..."
+        (cd "$TARGET_DIR" && source .venv/bin/activate && pip install -r requirements.txt 2>&1) && success "Installed requirements.txt" || warn "Dependency install failed (later: pip install -r requirements.txt)"
     fi
 else
     warn "Neither uv nor python3 found. Skipping venv setup."
-    warn "Install Python and run: cd $TARGET_DIR && uv venv .venv && source .venv/bin/activate && uv pip install memvid-sdk"
+    warn "Install Python and run: cd $TARGET_DIR && uv venv .venv && source .venv/bin/activate && uv pip install -r requirements.txt"
 fi
 
 # --- Initialize git repo if not already ---
@@ -451,39 +506,44 @@ echo -e "  ${BOLD}$TARGET_DIR${NC}"
 echo ""
 echo -e "${BOLD}Directory structure:${NC}"
 echo "  $INSTANCE_NAME/"
-echo "  ├── CLAUDE.md              # Agent instructions (generated)"
-echo "  ├── noto.yaml           # Instance configuration"
+echo "  ├── AGENTS.md              # Agent instructions (generated) — CLAUDE.md, GEMINI.md are aliases"
+echo "  ├── noto.yaml              # Instance configuration (llm backend, paths, learning loop)"
+echo "  ├── requirements.txt"
 echo "  ├── .gitignore"
+echo "  ├── .claude/               # Claude Code adapter: settings.json (permissions + hooks), skills -> ../skills"
 echo "  ├── brain/"
 echo "  │   ├── eisenhower.md      # Task management"
 echo "  │   ├── agents.md          # Agent registry"
+echo "  │   ├── lessons.md         # Approved lessons (written by tools/learn.py after first run)"
 echo "  │   └── README.md"
 echo "  ├── memory/"
 echo "  │   ├── $USER_PROFILE_FILE"
 echo "  │   ├── goals.md"
 echo "  │   ├── journal-$CURRENT_YEAR.md"
 echo "  │   └── README.md"
-echo "  ├── indexes/               # Memvid indexes (gitignored)"
+echo "  ├── indexes/               # Memvid indexes + learning.db (gitignored)"
 echo "  ├── emails/                # Email cache (gitignored)"
+echo "  ├── deploy/                # launchd plist + crontab example for the nightly learning pass"
 echo "  ├── articles/"
-echo "  │   ├── drafts/"
-echo "  │   └── published/"
-echo "  ├── tools/"
-echo "  ├── scripts/"
-echo "  ├── skills/"
-echo "  ├── tests/"
-echo "  ├── docs/"
-echo "  └── prompts/"
+echo "  ├── tools/                 # email, memory, files, llm.py (model chokepoint), learn.py (learning loop)"
+echo "  ├── skills/                # SKILL.md skills (Agent Skills format)"
+echo "  ├── scripts/  tests/  docs/  prompts/"
 echo ""
 echo -e "${BOLD}Next steps:${NC}"
 echo -e "  1. ${CYAN}cd $TARGET_DIR${NC}"
-echo -e "  2. Review and customize ${CYAN}CLAUDE.md${NC} (uncomment sections you need)"
-echo -e "  3. Add credentials to ${CYAN}brain/credentials.yaml${NC} (gitignored)"
-echo -e "  4. Copy/configure tools (file_indexer.py, memory_indexer.py, email.sh)"
-echo -e "  5. Set up email accounts in ${CYAN}tools/email.sh${NC}"
-echo -e "  6. ${CYAN}git add -A && git commit -m 'Initial PA setup'${NC}"
+echo -e "  2. Review ${CYAN}AGENTS.md${NC} (uncomment the sections you need)"
+echo -e "  3. Add credentials to ${CYAN}brain/credentials.yaml${NC} (gitignored); email accounts in ${CYAN}noto.yaml${NC}"
+echo -e "  4. Check the background model backend: ${CYAN}python tools/llm.py backends${NC} then ${CYAN}python tools/llm.py selftest${NC}"
+echo -e "     (auto = claude/codex/gemini CLI, or set llm: in noto.yaml for Ollama / OpenAI-compatible / Anthropic API)"
+echo -e "  5. Seal your instructions: ${CYAN}tools/memory-integrity-check.sh init${NC}"
+echo -e "  6. Schedule the nightly learning pass:"
+echo -e "       macOS:  ${CYAN}cp deploy/com.noto.$INSTANCE_NAME.nightly.plist ~/Library/LaunchAgents/ && launchctl bootstrap gui/\$(id -u) ~/Library/LaunchAgents/com.noto.$INSTANCE_NAME.nightly.plist${NC}"
+echo -e "       Linux:  ${CYAN}crontab -e${NC} and paste ${CYAN}deploy/crontab.example${NC}"
+echo -e "  7. ${CYAN}git add -A && git commit -m 'Initial agent setup'${NC}"
 echo ""
-echo -e "${BOLD}Quick start with Claude Code:${NC}"
-echo -e "  ${CYAN}cd $TARGET_DIR && claude${NC}"
+echo -e "${BOLD}Launch with the harness you use${NC} (all read the same AGENTS.md):"
+echo -e "  ${CYAN}cd $TARGET_DIR && claude${NC}        # Claude Code (hooks + slash-command skills wired)"
+echo -e "  ${CYAN}cd $TARGET_DIR && codex${NC}         # Codex CLI"
+echo -e "  ${CYAN}cd $TARGET_DIR && gemini${NC}        # Gemini CLI"
 echo ""
 echo -e "${GREEN}${BOLD}Happy automating!${NC}"

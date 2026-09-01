@@ -47,14 +47,14 @@ Move files to the appropriate folder based on content:
 Use `file_indexer.py` to add files to the searchable index:
 
 ```bash
-$LOLABOT_HOME/tools/files.sh scan /path/to/folder --tags "tag1,tag2"
-$LOLABOT_HOME/tools/files.sh add "/path/to/file.pdf" -d "Description" -t "tags"
+$NOTO_HOME/tools/files.sh scan /path/to/folder --tags "tag1,tag2"
+$NOTO_HOME/tools/files.sh add "/path/to/file.pdf" -d "Description" -t "tags"
 ```
 
 Or with full command:
 ```bash
-source $LOLABOT_HOME/.venv/bin/activate
-python $LOLABOT_HOME/tools/file_indexer.py scan /path --tags "tags"
+source $NOTO_HOME/.venv/bin/activate
+python $NOTO_HOME/tools/file_indexer.py scan /path --tags "tags"
 ```
 
 **Tagging guidelines:**
@@ -67,13 +67,13 @@ python $LOLABOT_HOME/tools/file_indexer.py scan /path --tags "tags"
 For documents containing personal information about the user or their family, add relevant facts to memory:
 
 ```bash
-$LOLABOT_HOME/tools/memory.sh add "Fact extracted from document" --type fact --tags "relevant,tags"
+$NOTO_HOME/tools/memory.sh add "Fact extracted from document" --type fact --tags "relevant,tags"
 ```
 
 Or with full command:
 ```bash
-source $LOLABOT_HOME/.venv/bin/activate
-python $LOLABOT_HOME/tools/memory_indexer.py add "..." --type fact --tags "..."
+source $NOTO_HOME/.venv/bin/activate
+python $NOTO_HOME/tools/memory_indexer.py add "..." --type fact --tags "..."
 ```
 
 **What to extract:**
@@ -145,12 +145,12 @@ cp "/mnt/fileserver/transport/Sam Birth Certificate.pdf" \
    "/home/user/documents/personal/sam/"
 
 # 5. Index the file
-source $LOLABOT_HOME/.venv/bin/activate
-python $LOLABOT_HOME/tools/file_indexer.py scan \
+source $NOTO_HOME/.venv/bin/activate
+python $NOTO_HOME/tools/file_indexer.py scan \
   /home/user/documents/personal/sam --tags "personal,sam,family"
 
 # 6. Add to memory
-python $LOLABOT_HOME/tools/memory_indexer.py add \
+python $NOTO_HOME/tools/memory_indexer.py add \
   "Sam Example born January 1, 2010. Parent: Jordan Example" \
   --type fact --tags "family,sam"
 ```

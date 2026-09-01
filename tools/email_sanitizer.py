@@ -31,12 +31,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from config import load_config, get_path
 
 # ---------------------------------------------------------------------------
-# Configuration — resolved from lolabot.yaml via config.py
+# Configuration — resolved from noto.yaml via config.py
 # ---------------------------------------------------------------------------
 
 CONFIG_FILE = get_path('credentials')
 
-# Operator emails loaded from lolabot.yaml email.operator_emails (fallback: empty list)
+# Operator emails loaded from noto.yaml email.operator_emails (fallback: empty list)
 _cfg = load_config()
 DEFAULT_OPERATOR_EMAILS = _cfg.get('email', {}).get('operator_emails', [])
 
@@ -551,7 +551,7 @@ def sanitize_email(email_data: Dict[str, Any],
 
     if auth_result["status"] == "quarantine":
         # QUARANTINE: operator address claimed with zero auth headers.
-        # Wipe all content — Lola must never see this message body.
+        # Wipe all content — Noto must never see this message body.
         email_data["body_text"] = ""
         email_data["body_html"] = ""
         email_data["security"] = {

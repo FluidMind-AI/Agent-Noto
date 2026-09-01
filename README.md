@@ -1,18 +1,17 @@
-# lolabot
+# noto
 
-**Your AI Chief of Staff** — Personal Assistant framework for [Claude Code](https://docs.anthropic.com/en/docs/claude-code). Email, semantic memory, task management, content security.
+**A base personal-agent framework for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).** Email, semantic memory, file indexing, task management, and content security — the foundation FluidMind builds specialized agents on.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform: macOS](https://img.shields.io/badge/Platform-macOS-lightgrey.svg)]()
-[![AI Maestro](https://img.shields.io/badge/AI%20Maestro-compatible-orange.svg)](https://github.com/23blocks-OS/ai-maestro)
+[![Platform: macOS%20%7C%20Linux](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-lightgrey.svg)]()
 
 ---
 
-## Why Lola?
+## What This Is
 
-Lola is a batteries-included AI Chief of Staff. She handles email, remembers everything, manages your tasks, and keeps your files organized. Clone the repo, run `setup.sh`, and point Claude Code at it — she's ready in minutes.
+noto is a batteries-included scaffold for a personal AI assistant that runs on Claude Code. Clone the repo, run `setup.sh`, and point Claude Code at the generated instance — the agent's name, role, and user configuration all live in `noto.yaml`, so the same framework can back any number of differently-branded agents.
 
-Lola runs standalone with just Claude Code. Optionally, deploy her on [AI Maestro](https://github.com/23blocks-OS/ai-maestro) for persistent memory across sessions, inter-agent messaging via AMP, and multi-machine orchestration.
+This is the **base layer**: deliberately free of any domain-specific (e.g. recruiting) or platform-specific (e.g. Lark) code. Specializations live in their own repos and layer on top.
 
 ## What You Get
 
@@ -26,22 +25,20 @@ Lola runs standalone with just Claude Code. Optionally, deploy her on [AI Maestr
 
 ## Quick Start
 
-> **Optional:** For persistent memory, inter-agent messaging, and multi-machine orchestration, deploy Lola on [AI Maestro](https://github.com/23blocks-OS/ai-maestro).
-
 ```bash
 # Clone the repo
-git clone https://github.com/23blocks-OS/lolabot.git
+git clone https://github.com/FluidMind-AI/vargas-partners-noto-agent.git noto
 
-# Scaffold a new PA instance
-./lolabot/setup.sh ~/my-assistant
+# Scaffold a new agent instance
+./noto/setup.sh ~/my-assistant
 
 # Configure your instance
 cd ~/my-assistant
-cp lolabot.yaml.example lolabot.yaml
-# Edit lolabot.yaml with your settings
+cp noto.yaml.example noto.yaml
+# Edit noto.yaml with your settings
 
 # Set environment
-export LOLABOT_HOME=~/my-assistant
+export NOTO_HOME=~/my-assistant
 
 # Start Claude Code in your instance directory
 cd ~/my-assistant && claude
@@ -49,27 +46,24 @@ cd ~/my-assistant && claude
 
 ## How It Works
 
-1. **Clone & scaffold** — `setup.sh` creates your PA instance directory with config, tools, and skills
-2. **Configure** — Edit `lolabot.yaml` with your email accounts, preferences, and paths
-3. **Launch** — Run `claude` in your instance directory — Lola has everything she needs
-4. **Scale up** (optional) — Deploy on [AI Maestro](https://github.com/23blocks-OS/ai-maestro) to add more agents, messaging, and orchestration
+1. **Clone & scaffold** — `setup.sh` creates your agent instance directory with config, tools, and skills
+2. **Configure** — Edit `noto.yaml` with your agent's name, email accounts, preferences, and paths
+3. **Launch** — Run `claude` in your instance directory — the agent has everything it needs
 
-Lola is a framework, not a product. Fork it, customize `CLAUDE.TEMPLATE.md`, swap tools in and out, and make her yours.
-
-> Want more agents beyond Lola? Browse 150+ specialist personalities at [The Agent Library](https://github.com/msitarzewski/agency-agents) and give them skills with the [Plugin Builder](https://github.com/23blocks-OS/ai-maestro-plugins).
+The framework is instance-agnostic: the repo holds engine code and templates only; every name, credential, and preference is config, and instances are separate (private) directories that are never pushed here.
 
 ## Project Structure
 
 ```
-your-assistant/          # Your PA instance (private, never pushed)
+your-assistant/          # Your agent instance (private, never pushed)
 ├── CLAUDE.md            # Generated from template
-├── lolabot.yaml         # Your config (git-ignored)
-├── tools/               # From lolabot (symlinked or copied)
-├── skills/              # From lolabot
-├── brain/               # Your tasks, notes, company info
-├── memory/              # Your journals, profiles, goals
-├── emails/              # Your cached emails
-└── indexes/             # Your search indexes
+├── noto.yaml            # Your config (git-ignored)
+├── tools/               # From this repo (copied at scaffold time)
+├── skills/              # From this repo
+├── brain/               # Tasks, notes, company info
+├── memory/              # Journals, profiles, goals
+├── emails/              # Cached emails
+└── indexes/             # Search indexes
 ```
 
 ## Tools
@@ -93,13 +87,13 @@ your-assistant/          # Your PA instance (private, never pushed)
 
 ## Configuration
 
-All configuration lives in `lolabot.yaml`. See `lolabot.yaml.example` for all options.
+All configuration lives in `noto.yaml`. See `noto.yaml.example` for all options.
 
-The single required environment variable is `LOLABOT_HOME`, pointing to your PA instance directory.
+The single required environment variable is `NOTO_HOME`, pointing to your agent instance directory.
 
 ## Security
 
-lolabot includes defense-in-depth for AI assistants:
+noto includes defense-in-depth for AI assistants:
 
 - **Prompt injection scanning** — 34 patterns detected in inbound email
 - **Trust model** — Operator (verified sender) vs. external content separation
@@ -110,14 +104,13 @@ lolabot includes defense-in-depth for AI assistants:
 
 ## Requirements
 
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Claude Max or API key)
-- [AI Maestro](https://github.com/23blocks-OS/ai-maestro) (optional — persistent memory, messaging, multi-machine)
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Claude subscription or API key)
 - Python 3.10+
 - `uv` (recommended) or `pip`
 - Python packages: `memvid-sdk`, `pyyaml`, `pillow-heif`
 
-## License
+## Provenance & License
 
-MIT — [23blocks Inc.](https://23blocks.com)
+MIT — see [LICENSE](LICENSE).
 
-Works standalone or on [AI Maestro](https://github.com/23blocks-OS/ai-maestro) — the OS for AI-first organizations.
+noto began as a fork of [23blocks-OS/lolabot](https://github.com/23blocks-OS/lolabot) (MIT, © 2026 23blocks Inc.) and has since been rebranded and hardened for FluidMind's agent fleet. Thanks to the lolabot authors for the original scaffold.

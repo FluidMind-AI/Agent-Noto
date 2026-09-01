@@ -1,6 +1,6 @@
 # Email Security System
 
-How Lola's email content security works, end to end.
+How Noto's email content security works, end to end.
 
 ## Overview
 
@@ -22,7 +22,7 @@ email-bridge (pm2, polls every 15 min)
 AI Maestro notification: "[EMAIL] New from sender - Subject"
        |
        v
-Lola reads: tools/email.sh read <account> <uid>
+Noto reads: tools/email.sh read <account> <uid>
        |
        v
 email_client.py -> parse_email()
@@ -58,7 +58,7 @@ Subject: Meeting tomorrow
 Account: assistant@example.com
 ```
 
-Lola sees this notification in the AI Maestro inbox and reads the email with:
+Noto sees this notification in the AI Maestro inbox and reads the email with:
 
 ```bash
 tools/email.sh read assistant@example.com <uid>
@@ -142,7 +142,7 @@ Three outcomes based on authentication:
 **Quarantine** (no authentication headers at all): This is the most suspicious case — someone claims to be the operator but there's zero evidence to verify it. The email is **jailed**:
 - `body_text` and `body_html` are destroyed (set to empty string)
 - The email is saved to `emails/<account>/quarantine/<uid>.json` (not inbox)
-- Lola never sees the body content — only the jail notice
+- Noto never sees the body content — only the jail notice
 - `trust_level` is set to `"quarantine"` and `risk_summary` to `"quarantine"`
 
 The quarantine display:
@@ -320,13 +320,13 @@ ID:      790
 Trust:   [OK] operator - sender operator@example.com is in operator whitelist
 Risk:    [OK] clean
 ======================================================================
-Hey Lola, can you check the server status?
+Hey Noto, can you check the server status?
 ======================================================================
 ```
 
 ## Behavioral Layer (`skills/mail-handler/SKILL.md`)
 
-The sanitizer handles technical defense. The skill handles what Lola *does* with the result:
+The sanitizer handles technical defense. The skill handles what Noto *does* with the result:
 
 ### Absolute Rules
 

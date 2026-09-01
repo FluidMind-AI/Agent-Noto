@@ -1,5 +1,5 @@
 # Personal data (never push)
-lolabot.yaml
+noto.yaml
 brain/credentials*.yaml
 brain/companies*.yaml
 brain/*-private.yaml

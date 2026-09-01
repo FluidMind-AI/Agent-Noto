@@ -1,5 +1,5 @@
-# lolabot.yaml - PA Instance Configuration
-# Copy this file to lolabot.yaml and customize for your instance.
+# noto.yaml - PA Instance Configuration
+# Copy this file to noto.yaml and customize for your instance.
 # This file is git-ignored — it contains instance-specific settings.
 
 agent:
@@ -11,7 +11,7 @@ user:
   preferred_language: "English"
   native_language: "English"
 
-# Paths (relative to LOLABOT_HOME, or absolute)
+# Paths (relative to NOTO_HOME, or absolute)
 paths:
   credentials: "brain/credentials.yaml"
   emails_dir: "emails"

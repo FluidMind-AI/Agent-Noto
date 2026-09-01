@@ -1,10 +1,10 @@
 """
-lolabot Configuration Loader
+noto Configuration Loader
 
 Resolves paths and settings from:
-1. LOLABOT_HOME environment variable (required, or auto-detected)
-2. lolabot.yaml config file at LOLABOT_HOME root
-3. Sensible defaults matching standard lolabot directory layout
+1. NOTO_HOME environment variable (required, or auto-detected)
+2. noto.yaml config file at NOTO_HOME root
+3. Sensible defaults matching standard noto directory layout
 """
 
 import os
@@ -21,22 +21,22 @@ def _resolve_path(relative_or_absolute: str, base: str) -> str:
 
 
 def get_home() -> str:
-    """Get LOLABOT_HOME — the PA instance root directory."""
-    home = os.environ.get("LOLABOT_HOME")
+    """Get NOTO_HOME — the PA instance root directory."""
+    home = os.environ.get("NOTO_HOME")
     if home:
         return home
-    # Auto-detect: assume tools/ is one level below LOLABOT_HOME
+    # Auto-detect: assume tools/ is one level below NOTO_HOME
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def load_config() -> Dict[str, Any]:
-    """Load lolabot.yaml config, with caching."""
+    """Load noto.yaml config, with caching."""
     global _config_cache
     if _config_cache is not None:
         return _config_cache
 
     home = get_home()
-    config_path = os.path.join(home, "lolabot.yaml")
+    config_path = os.path.join(home, "noto.yaml")
     config: Dict[str, Any] = {}
 
     if os.path.exists(config_path):

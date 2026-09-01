@@ -8,10 +8,10 @@
 
 set -euo pipefail
 
-LOLABOT_HOME="${LOLABOT_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+NOTO_HOME="${NOTO_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 TRANSPORT="/srv/fileserver/transport"
 DEFAULT_OUTPUT="/tmp/heic-converted"
-VENV="$LOLABOT_HOME/.venv/bin/activate"
+VENV="$NOTO_HOME/.venv/bin/activate"
 QUALITY=85
 MAX_WIDTH=2000
 

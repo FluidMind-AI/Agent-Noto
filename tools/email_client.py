@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Lola Email Client
+Noto Email Client
 
 IMAP/SMTP email client for reading and sending emails.
 Supports multiple accounts with local caching and search.
 
 Accounts:
 - operator@example.com - Read and reply on the user's behalf
-- assistant@example.com - Lola's own inbox
+- assistant@example.com - Noto's own inbox
 
 Usage:
     python email_client.py check operator@example.com
@@ -62,7 +62,7 @@ def _strip_security_tags(text: str) -> str:
     return text
 
 
-# Configuration (resolved from lolabot.yaml via config.py)
+# Configuration (resolved from noto.yaml via config.py)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from config import load_config, get_path
 
@@ -70,7 +70,7 @@ CONFIG_FILE = get_path('credentials')
 EMAILS_DIR = get_path('emails_dir')
 INDEX_PATH = get_path('emails_index')
 
-# Account mapping — loaded from lolabot.yaml email.accounts, fallback to empty
+# Account mapping — loaded from noto.yaml email.accounts, fallback to empty
 _cfg = load_config()
 _accounts = _cfg.get('email', {}).get('accounts', [])
 ACCOUNT_MAP = {a['address']: a['config_key'] for a in _accounts if 'address' in a and 'config_key' in a}
@@ -843,7 +843,7 @@ def cmd_migrate_security():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Lola Email Client")
+    parser = argparse.ArgumentParser(description="Noto Email Client")
     subparsers = parser.add_subparsers(dest="command", help="Command")
 
     # check

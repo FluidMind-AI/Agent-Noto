@@ -4,7 +4,7 @@ Research conducted: 2026-01-25
 
 ## The Question
 
-Should Lola's memory system use text files, databases, or something else?
+Should Noto's memory system use text files, databases, or something else?
 
 ---
 
@@ -198,7 +198,7 @@ Simple filesystem agents outperformed specialized memory tools because:
 
 ---
 
-## Recommendation for Lola
+## Recommendation for Noto
 
 ### Phase 1: Enhanced Hybrid (Start Now)
 

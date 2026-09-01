@@ -39,7 +39,7 @@ except ImportError:
     MEMVID_AVAILABLE = False
     print("Warning: memvid-sdk not installed. Install with: pip install memvid-sdk")
 
-# Configuration (resolved from lolabot.yaml via config.py)
+# Configuration (resolved from noto.yaml via config.py)
 LONG_TERM_INDEX = get_path('long_term_index')
 SHORT_TERM_INDEX = get_path('short_term_index')
 METADATA_DB = get_path('metadata_db')

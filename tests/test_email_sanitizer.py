@@ -601,7 +601,7 @@ class TestAuthIntegration:
         """Operator email with passing auth → trusted, clean."""
         email_data = {
             "from": "operator@example.com",
-            "subject": "Hello Lola",
+            "subject": "Hello Noto",
             "body_text": "Check the server please",
             "body_html": "",
             "attachments": [],

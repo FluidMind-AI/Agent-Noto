@@ -5,7 +5,7 @@
 #   email-send.sh --to "user@example.com" --subject "Hello" --body "Message"
 #   email-send.sh --from assistant@example.com --to "user@example.com" --subject "Hello" --body "Message"
 
-LOLABOT_HOME="${LOLABOT_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+NOTO_HOME="${NOTO_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Sending account must be explicit (--from) — no hardcoded default.

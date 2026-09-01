@@ -11,17 +11,17 @@
 
 set -euo pipefail
 
-LOLABOT_HOME="${LOLABOT_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-CHECKSUM_FILE="$LOLABOT_HOME/indexes/integrity-checksums.sha256"
+NOTO_HOME="${NOTO_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+CHECKSUM_FILE="$NOTO_HOME/indexes/integrity-checksums.sha256"
 ALERT_LOG="/tmp/integrity-alerts.log"
 
 # Files to monitor
 WATCHED_FILES=(
-    "$LOLABOT_HOME/CLAUDE.md"
+    "$NOTO_HOME/CLAUDE.md"
 )
 
 # Dynamically add brain/*.md and memory auto-memory files
-for f in "$LOLABOT_HOME"/brain/*.md; do
+for f in "$NOTO_HOME"/brain/*.md; do
     [ -f "$f" ] && WATCHED_FILES+=("$f")
 done
 for f in "$HOME"/.claude/projects/*/memory/*.md; do

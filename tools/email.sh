@@ -1,5 +1,5 @@
 #!/bin/bash
-# Lola Email Client - Main wrapper
+# Noto Email Client - Main wrapper
 #
 # Usage:
 #   email.sh check operator@example.com
@@ -10,9 +10,9 @@
 #   email.sh sync operator@example.com --days 7
 #   email.sh accounts
 
-LOLABOT_HOME="${LOLABOT_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+NOTO_HOME="${NOTO_HOME:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VENV_DIR="$LOLABOT_HOME/.venv"
+VENV_DIR="$NOTO_HOME/.venv"
 
 # Activate venv if exists
 if [ -d "$VENV_DIR" ]; then

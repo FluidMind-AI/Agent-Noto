@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Lola File Indexer
+Noto File Indexer
 
 Indexes files from multiple sources into Memvid V2 for fast retrieval.
 Supports local files, remote hosts, OneDrive, cloud apps, and URLs.
@@ -36,7 +36,7 @@ except ImportError:
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from config import get_path
 
-# Configuration — resolved from lolabot.yaml via config.py
+# Configuration — resolved from noto.yaml via config.py
 INDEX_PATH = get_path('files_index')
 
 # Location types
@@ -580,7 +580,7 @@ def cmd_stats(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Lola File Indexer - Index and search files from any location"
+        description="Noto File Indexer - Index and search files from any location"
     )
     subparsers = parser.add_subparsers(dest="command", help="Commands")
 

@@ -1,4 +1,4 @@
-# Lola Two-Tier Memory System Plan
+# Noto Two-Tier Memory System Plan
 
 **Date:** 2026-01-25
 **Status:** Draft - Needs Review
@@ -19,7 +19,7 @@ Unused memories fade
 Important/emotional memories get priority
 ```
 
-**For Lola:**
+**For Noto:**
 
 ```
 CONVERSATIONS → SHORT-TERM → LONG-TERM
@@ -41,9 +41,9 @@ Confidence scores = memory strength
 | Component | Location | Purpose |
 |-----------|----------|---------|
 | Conversation JSONL | `~/.claude/projects/*/conversations/` | Raw conversation history |
-| memories.mv2 | `lola/indexes/memories.mv2` | Manually curated memories |
-| files.mv2 | `lola/indexes/files.mv2` | File location index |
-| Markdown journals | `lola/memory/journal-*.md` | High-level summaries |
+| memories.mv2 | `noto/indexes/memories.mv2` | Manually curated memories |
+| files.mv2 | `noto/indexes/files.mv2` | File location index |
+| Markdown journals | `noto/memory/journal-*.md` | High-level summaries |
 
 ### What's Missing
 
@@ -73,7 +73,7 @@ Confidence scores = memory strength
                               ↓
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      SHORT-TERM MEMORY                               │
-│  lola/indexes/short-term.mv2                                         │
+│  noto/indexes/short-term.mv2                                         │
 │                                                                      │
 │  - Recent extractions (last 30 days)                                │
 │  - Higher detail than long-term                                     │
@@ -89,7 +89,7 @@ Confidence scores = memory strength
                               ↓
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      LONG-TERM MEMORY                                │
-│  lola/indexes/memories.mv2 (existing, enhanced)                      │
+│  noto/indexes/memories.mv2 (existing, enhanced)                      │
 │                                                                      │
 │  - Permanent, distilled knowledge                                   │
 │  - Deduplicated with reinforcement                                  │
@@ -103,7 +103,7 @@ Confidence scores = memory strength
                               ↓
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      CURATED CONTEXT                                 │
-│  lola/memory/*.md, CLAUDE.md, brain/*.md                            │
+│  noto/memory/*.md, CLAUDE.md, brain/*.md                            │
 │                                                                      │
 │  - Hand-written summaries loaded into context                       │
 │  - Most important, most refined                                     │
@@ -226,7 +226,7 @@ def consolidate_conversations(days=7):
         messages = read_jsonl(jsonl)
 
         # 4. Extract memories (this is where LLM helps)
-        # In our case, I (Lola) am the LLM - I can do this interactively
+        # In our case, I (Noto) am the LLM - I can do this interactively
         # Or we can use a prompt template
 
         # 5. Add to short-term with source tracking
@@ -366,7 +366,7 @@ def promote_to_long_term(threshold_days=30, min_reinforcement=2):
 ## Directory Structure (After Implementation)
 
 ```
-lola/
+noto/
 ├── indexes/
 │   ├── memories.mv2      # Long-term (permanent, distilled)
 │   ├── short-term.mv2    # Short-term (recent, detailed)
@@ -391,11 +391,11 @@ lola/
 1. **How often to consolidate?**
    - Option A: End of each conversation (too frequent?)
    - Option B: Daily (scheduled job)
-   - Option C: On-demand ("Lola, consolidate today's memories")
+   - Option C: On-demand ("Noto, consolidate today's memories")
    - **Recommendation:** C - On-demand feels more natural
 
 2. **Who extracts memories from JSONL?**
-   - Option A: I (Lola) do it interactively in conversation
+   - Option A: I (Noto) do it interactively in conversation
    - Option B: Automated with prompt template
    - **Recommendation:** A - I'm already the LLM, let me do it thoughtfully
 

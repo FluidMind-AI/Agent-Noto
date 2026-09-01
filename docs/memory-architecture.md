@@ -1,4 +1,4 @@
-# Lola Memory Architecture
+# Noto Memory Architecture
 
 ## Overview
 
@@ -151,26 +151,26 @@ User: "Show me photos from Sam's graduation"
 
 ## Tools
 
-### File Indexer (`lola-index-files`)
+### File Indexer (`noto-index-files`)
 ```bash
 # Scan directories and update files.mv2
-lola-index-files /home/user/photos
-lola-index-files /home/user/documents
+noto-index-files /home/user/photos
+noto-index-files /home/user/documents
 
 # Query files
-lola-find-files "Ecuador trip photos"
+noto-find-files "Ecuador trip photos"
 ```
 
-### Memory Manager (`lola-memory`)
+### Memory Manager (`noto-memory`)
 ```bash
 # Add memory
-lola-memory add --type fact "The user's income is $100,000/year"
+noto-memory add --type fact "The user's income is $100,000/year"
 
 # Query memories
-lola-memory find "health issues"
+noto-memory find "health issues"
 
 # Link file to memory
-lola-memory link --file /path/to/photo.jpg --memory "Ecuador trip"
+noto-memory link --file /path/to/photo.jpg --memory "Ecuador trip"
 ```
 
 ## Migration from Current System
@@ -178,7 +178,7 @@ lola-memory link --file /path/to/photo.jpg --memory "Ecuador trip"
 Current markdown files in `memory/` stay as curated context. We add:
 1. `indexes/` folder with Memvid files
 2. CLI tools for indexing and querying
-3. Skill for Lola to use during conversations
+3. Skill for Noto to use during conversations
 
 ## When to Use What
 

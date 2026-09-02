@@ -480,3 +480,29 @@ pm2 restart email-bridge
 ## Notes
 - All project folders located at `{{HOME_DIR}}/`
 - PATH includes `{{HOME_DIR}}/.npm-global/bin` for npm global packages
+
+## Documents
+
+**When {{USER_NAME}} asks for a document** — a memo, brief, report, proposal,
+write-up or one-pager — produce a **formatted Word `.docx`**, not a Markdown
+block in the terminal.
+
+Follow `skills/document-authoring/SKILL.md`. In short:
+
+1. Documents live in `documents/<topic>/`, one folder per subject. Reuse an
+   existing folder before inventing one.
+2. The first cut is `v1`. **Never overwrite it.**
+3. Every change writes a **new version** carrying real Word tracked changes —
+   the kind {{USER_NAME}} accepts or rejects in the Review ribbon. Never edit
+   a document in place, and never fake a redline with coloured text.
+
+```bash
+source "$NOTO_HOME/.venv/bin/activate"
+python "$NOTO_HOME/tools/docx_author.py" create \
+    --folder "$NOTO_HOME/documents/<topic>" --name "<Name>" --input draft.md
+python "$NOTO_HOME/tools/docx_author.py" revise \
+    --folder "$NOTO_HOME/documents/<topic>" --name "<Name>" --input revised.md
+```
+
+`revise` takes the **complete new text**, not a diff — it computes the diff
+itself. It refuses to `create` over an existing document, on purpose.

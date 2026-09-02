@@ -22,6 +22,7 @@ This is the **base layer**: deliberately free of any domain-specific (e.g. recru
 - **Content Security** — 34-pattern prompt injection defense, email sanitizer, attachment risk assessment
 - **Skills** — File processing, mail handling, memory delegation
 - **HEIC/Image Processing** — Convert Apple image formats for AI consumption
+- **Document Authoring** — Word `.docx` output, versioned with genuine Word tracked changes
 
 ## Quick Start
 
@@ -62,6 +63,7 @@ your-assistant/          # Your agent instance (private, never pushed)
 ├── skills/              # From this repo
 ├── brain/               # Tasks, notes, company info
 ├── memory/              # Journals, profiles, goals
+├── documents/           # Word documents, one folder per topic
 ├── emails/              # Cached emails
 └── indexes/             # Search indexes
 ```
@@ -75,6 +77,7 @@ your-assistant/          # Your agent instance (private, never pushed)
 | `tools/memory_indexer.py` | Semantic memory with Memvid + SQLite |
 | `tools/file_indexer.py` | Multi-location file discovery and search |
 | `tools/heic-convert.sh` | Apple HEIC to JPEG conversion |
+| `tools/docx_author.py` | Word authoring; revisions as real tracked changes |
 | `tools/memory-integrity-check.sh` | Detect unauthorized file modifications |
 
 ## Skills
@@ -84,6 +87,7 @@ your-assistant/          # Your agent instance (private, never pushed)
 | `file-processing` | Document classification, organization, indexing |
 | `mail-handler` | Safe email interaction rules and trust model |
 | `pa-memory-delegation` | User memory management (facts, events, learnings) |
+| `document-authoring` | Word documents, topic folders, tracked-change versioning |
 
 ## Configuration
 
@@ -107,7 +111,7 @@ noto includes defense-in-depth for AI assistants:
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (Claude subscription or API key)
 - Python 3.10+
 - `uv` (recommended) or `pip`
-- Python packages: `memvid-sdk`, `pyyaml`, `pillow-heif`
+- Python packages: `memvid-sdk`, `pyyaml`, `pillow-heif`, `python-docx`
 
 ## Provenance & License
 
